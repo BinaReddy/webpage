@@ -1,0 +1,21 @@
+{% extends "base_with_auth.html" %}
+
+{% block content %}
+
+	<!--&port={{ port }}" todo: figure out how to scrape the websocket server port out of ansible's logs, or supply it from here...-->
+	{% for host in hosts %}
+		{% if host[0] in pcs_failed %}
+		<div class="hero is-small is-danger">
+			<p>{{ host[0] }}: deployment failed. </p>
+			<a class="button is-link" href="{{ url_for('main.index') }}">click here to deploy another appimage</a><br />
+		</div>
+		{% else %}
+		<div class="hero is-small is-success">
+			<p> Deploy Successful on {{host[0]}}</p>
+			<a class="button is-link" href="/view_log?host={{ host[1] }}&port={{port_no}}&pc={{host[0]}}">View logs for {{ host[0] }}</a><br>
+		</div>
+		{% endif %}
+		<br/>
+	{% endfor %}
+
+{% endblock %}

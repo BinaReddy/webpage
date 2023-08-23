@@ -1,0 +1,8 @@
+---
+- name: stop running of the appimage from webpage
+  hosts: '{{pc}}'
+  tasks:
+    - name: kill the background process running on the controlpc
+      shell: |
+         cd /home/{{appuser}}
+         ps ax | grep server.py | grep -v grep |awk {'print $1'}| xargs kill -9

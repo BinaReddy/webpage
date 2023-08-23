@@ -1,0 +1,65 @@
+{% extends "base_with_auth.html" %}
+
+{% block content %}
+<p style="color:red;font-weight: bold;font-size:x-large;"> {{info}} </p>
+
+<!--to display the flash message-->
+{% with messages = get_flashed_messages() %}
+	{% if messages %}
+		{% for msg in messages %}
+			<p style="color:red;font-weight: bold;font-size:x-large;">{{msg}}</p>
+		{% endfor %}
+	{% endif %}
+{% endwith %}
+
+<!--refresh the page when back button on browser is clicked-->
+<script>
+	if (performance.navigation.type == 2) {
+		location.reload(true);
+	}
+</script>
+
+<!--list the appImages-->
+<!-- </ul>
+{% for file in files %}
+	<li class="collection-item">{{ file }}</li>
+{% endfor %}
+</ul> -->
+<div class="box column is-4 is-offset-4">
+	<form class="control is-full" action="/deploy" method="post" autocomplete="on">
+		<div class="field">
+			<!--create a drop down of appimages so that the user can select one-->
+			<label for="appimages">Select the AppImage:</label>
+			<select name="appimages" id="appimages" class="select is-large is-fullwidth">
+				{% for file in files %}
+					<option value="{{ file }}">{{ file }}</option>
+				{% endfor %}
+			</select>
+			<br/>
+
+			<!--create a dropdown for the controlPC -->
+			<div>
+				<!-- <form method="post" id="multiple_select_form" onsubmit="test()"> -->
+
+				<label for="pc">Deploy AppImage to:</label>
+				<select multiple name="pc" id="pc" class="select selectpicker is-multiple is-fullwidth is-large" data-live-search="true">
+					{% for host in hosts %}
+					<option value="{{ host[0] }}">{{ host[0] }}</option>
+					{% endfor %}
+				</select>
+				<br/>
+				<input type="submit" name="Deploy" class="button is-primary is-large is-fullwidth" value="Deploy" />
+			</div>
+		</div>
+	</form>
+</div>
+
+<!--select picker code-->
+<script>
+	$(document).ready(function () {
+		var hosts = $('.selectpicker')
+		hosts.selectpicker('refresh');
+		hosts.size = hosts.length;
+	});
+</script>
+{% endblock %}

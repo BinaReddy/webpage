@@ -1,0 +1,30 @@
+---
+- name: copy and run the appimage
+  hosts: '{{pc}}'
+  tasks:
+    - name: copy the appimage to controlpc
+      copy:
+       src: '{{appimage_path}}/{{appimage}}'
+       dest: /home/{{appuser}}
+       mode: a+x
+    - name: copy the server.py to controlPC
+      copy:
+       src: remoteLogging/server.py
+       dest: /home/{{appuser}}
+       mode: a+x
+    - name: copy the LICENSE to controlPC
+      copy:
+       src: remoteLogging/LICENSE
+       dest: /home/{{appuser}}
+       mode: a+x
+    - name: copy websocket_server dir  to controlPC
+      copy:
+       src: remoteLogging/websocket_server
+       dest: /home/{{appuser}}
+       mode: a+x
+
+    - name: cd to where the appimage is present and execute it
+      shell: |
+         cd /home/{{appuser}}
+         printf 'y\ny\n' | nohup ./{{appimage}} | nohup python3 server.py {{port_no}} &
+         sleep 10

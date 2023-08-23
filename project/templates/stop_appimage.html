@@ -1,0 +1,7 @@
+{% extends "base_with_auth.html" %}
+{% block content %}
+
+<h1 style="font-size:x-large"><b>{{info}} </h1> <br>
+<a href="{{ url_for('main.index') }}">click here to deploy appimage</a><br/>
+
+{% endblock %}

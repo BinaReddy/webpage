@@ -1,0 +1,67 @@
+{% extends "base_with_auth.html" %}
+
+{% block content %}
+<form action="/view_log?pc={{mypc}}" method="POST" autocomplete="on">
+	<p style="color:blue"><b>Stop the appimage </b><input type="submit" name="stop" value="STOP"> </p>
+	<input type="hidden" name="pc" value="{{mypc}}">
+
+</form>
+
+<div id="log"></div>
+<script type="text/javascript">
+	var ws;
+
+	function init(suppliedHost, suppliedPort) {
+		const queryString = window.location.search;
+		const params = new URLSearchParams(queryString);
+		const host = suppliedHost || params.get('host') || 'localhost';
+		const port = suppliedPort || params.get('port') || '9001';
+		const wsUri = "ws://" + host + ":" + port + "/";
+		console.log("Connecting to " + wsUri)
+
+		// Connect to Web Socket
+		ws = new WebSocket(wsUri);
+
+		// Set event handlers.
+		ws.onopen = function () {
+			output("### Connected to " + wsUri + ". ###");
+		};
+
+		ws.onmessage = function (e) {
+			output(e.data);
+		};
+
+		ws.onclose = function () {
+			output("### Websocket connection closed. ###");
+		};
+
+		ws.onerror = function (e) {
+			output("### Websocket error. See console for more details. ###");
+			console.log(e)
+		};
+	}
+	function onSubmit() {
+		var input = document.getElementById("input");
+		// You can send message to the Web Socket using ws.send.
+		ws.send(input.value);
+		output("send: " + input.value);
+		input.value = "";
+		input.focus();
+	}
+
+	function onCloseClick() {
+		ws.close();
+	}
+
+	function output(str) {
+		var log = document.getElementById("log");
+		var escaped = str.replace(/&/, "&amp;").replace(/</, "&lt;").
+			replace(/>/, "&gt;").replace(/"/, "&quot;").replace(/\n/g, '<br/>'); // "
+		log.innerHTML += escaped;
+	}
+
+	var initHost = {% if host is defined %}{ { host | string | safe } } {% else %} null{% endif %};
+	var initPort = {% if port is defined %}{ { port | int | safe } } {% else %} null{% endif %};
+	init(initHost, initPort);
+</script>
+{% endblock %}
